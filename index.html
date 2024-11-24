@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Interface</title>
+</head>
+<body>
+    <h1>Simple API Interface</h1>
+
+    <h2>Post Data</h2>
+    <form id="postForm">
+        <label for="postId">ID:</label>
+        <input type="text" id="postId" required>
+        <br>
+        <label for="postData">Data:</label>
+        <input type="text" id="postData" required>
+        <br>
+        <button type="submit">Post</button>
+    </form>
+
+    <h2>Get Data</h2>
+    <form id="getForm">
+        <label for="getId">ID:</label>
+        <input type="text" id="getId" required>
+        <br>
+        <button type="submit">Get</button>
+    </form>
+
+    <h3>Output:</h3>
+    <pre id="output"></pre>
+
+    <script>
+        const apiUrl = 'http://localhost:3000'; // Change this to your API endpoint
+
+        // Function to handle posting data
+        document.getElementById('postForm').onsubmit = function(e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const id = document.getElementById('postId').value;
+            const data = document.getElementById('postData').value;
+
+            // Send POST request
+            fetch(`${apiUrl}/Post/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Id: id, Data: data })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').textContent = JSON.stringify(data);
+                document.getElementById('postForm').reset(); // Clear the form
+            })
+            .catch(error => {
+                document.getElementById('output').textContent = `Error: ${error}`;
+            });
+        };
+
+        // Function to handle getting data
+        document.getElementById('getForm').onsubmit = function(e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const id = document.getElementById('getId').value;
+
+            // Send GET request
+            fetch(`${apiUrl}/Get/?Id=${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Data not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('output').textContent = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('output').textContent = `Error: ${error.message}`;
+            });
+        };
+    </script>
+</body>
+</html>
